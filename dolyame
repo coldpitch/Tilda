@@ -1,0 +1,512 @@
+<script>
+
+const DolyameInjector = {
+  init() {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.inject());
+    } else {
+      this.inject();
+    }
+
+    this.observePopup();
+  },
+
+  inject() {
+    const priceWrapper = document.querySelector('.js-store-price-wrapper');
+    const prodInfo = document.querySelector('.t-store__prod-popup__info');
+
+    if (!priceWrapper || !prodInfo) {
+      return;
+    }
+
+    if (prodInfo.querySelector('#dolyame-container')) {
+      return;
+    }
+
+    const container = document.createElement('div');
+    container.id = 'dolyame-container';
+    container.style.marginTop = '16px';
+
+    priceWrapper.parentNode.insertBefore(container, priceWrapper.nextSibling);
+  },
+
+  observePopup() {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length) {
+          setTimeout(() => this.inject(), 100);
+        }
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+};
+
+DolyameInjector.init();
+    
+</script>
+
+  <style>
+.dolyame-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 12px !important;
+  background: #f5f5f5 !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-family: Avenir, Helvetica, Arial, sans-serif !important;
+  font-size: 13px !important;
+  line-height: normal !important;
+  font-weight: normal !important;
+  text-transform: none !important;
+  transition: background 0.2s !important;
+}
+
+.dolyame-button:hover {
+  background: #ebebeb !important;
+}
+
+.dolyame-button-label {
+  width: 52px !important;
+  height: 16px !important;
+  background: black !important;
+  border-radius: 2px !important;
+  flex-shrink: 0 !important;
+}
+
+.dolyame-button-text {
+  flex-grow: 1 !important;
+}
+
+.dolyame-modal-bg {
+  display: none !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: rgba(0, 0, 0, 0.75) !important;
+  z-index: 999999 !important;
+}
+
+.dolyame-modal-bg.active {
+  display: block !important;
+}
+
+.dolyame-modal {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  background: white !important;
+  border-radius: 24px !important;
+  padding: 24px !important;
+  max-width: 600px !important;
+  width: 90% !important;
+  max-height: 85vh !important;
+  overflow-y: auto !important;
+  box-shadow: 0 18px 30px rgba(51, 51, 51, 0.64) !important;
+  z-index: 9999999 !important;
+  display: none !important;
+  font-family: Avenir, Helvetica, Arial, sans-serif !important;
+}
+
+.dolyame-modal * {
+  font-family: Avenir, Helvetica, Arial, sans-serif !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.dolyame-modal.active {
+  display: block !important;
+}
+
+.dolyame-modal-close {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.dolyame-modal-header {
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  margin-bottom: 10px !important;
+  text-align: left !important;
+  line-height: 1.2 !important;
+  color: #000 !important;
+}
+
+.dolyame-modal-header svg {
+  display: block !important;
+  margin-bottom: 10px !important;
+}
+
+.dolyame-modal-header-text {
+  text-align: left !important;
+  padding-top: 10px !important;
+}
+
+.dolyame-modal-description {
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+  margin-bottom: 20px !important;
+  line-height: 1.4 !important;
+}
+
+.dolyame-features {
+  display: flex !important;
+  gap: 20px !important;
+  margin: 20px 0 !important;
+  flex-wrap: wrap !important;
+}
+
+.dolyame-feature {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  font-size: 14px !important;
+  color: #000 !important;
+  line-height: 1.4 !important;
+}
+
+.dolyame-feature svg {
+  flex-shrink: 0 !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+}
+
+.dolyame-payments {
+  display: flex !important;
+  justify-content: space-between !important;
+  background: #f6f7f8 !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  margin: 20px 0 !important;
+  gap: 10px !important;
+}
+
+.dolyame-payment-item {
+  flex: 1 !important;
+  color: #000 !important;
+}
+
+.dolyame-payment-date {
+  font-size: 12px !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+  margin-bottom: 8px !important;
+  line-height: 1.3 !important;
+}
+
+.dolyame-payment-amount {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #000 !important;
+  line-height: 1.2 !important;
+}
+
+.dolyame-payment-item:first-child .dolyame-payment-date {
+  color: #000 !important;
+  font-weight: 600 !important;
+}
+
+.dolyame-payment-item:not(:first-child) {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.dolyame-payment-item:not(:first-child) .dolyame-payment-amount,
+.dolyame-payment-item:not(:first-child) .dolyame-payment-date {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.dolyame-payment-line {
+  height: 5px !important;
+  background: #4288f9 !important;
+  border-radius: 3px !important;
+  margin: 8px auto 0 !important;
+}
+
+.dolyame-payment-item:not(:first-child) .dolyame-payment-line {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+
+.dolyame-modal-footer {
+  font-size: 12px !important;
+  text-align: center !important;
+  color: rgba(0, 0, 0, 0.4) !important;
+  line-height: 1.4 !important;
+}
+
+.dolyame-modal-footer a {
+  color: #1771e6 !important;
+  text-decoration: none !important;
+}
+
+.dolyame-modal-footer a:hover {
+  text-decoration: underline !important;
+}
+
+@media (max-width: 640px) {
+  .dolyame-modal {
+    position: fixed !important;
+    bottom: 0 !important;
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    border-radius: 24px 24px 0 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding: 16px !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .dolyame-payments {
+    flex-wrap: wrap !important;
+  }
+
+  .dolyame-payment-item {
+    flex: 1 1 45% !important;
+  }
+
+  .dolyame-features {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .dolyame-feature svg {
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+}
+</style>
+
+<script>
+const DolyameWidget = {
+  modal: null,
+  bg: null,
+  totalAmount: 0,
+
+  // Функция для форматирования даты
+  formatDate(date) {
+    const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    return `${date.getDate()} ${months[date.getMonth()]}`;
+  },
+
+  // Получает цену из DOM
+  getPriceFromDOM() {
+    const priceElement = document.querySelector('[data-product-price-def]');
+    if (priceElement) {
+      const price = parseInt(priceElement.getAttribute('data-product-price-def'));
+      return isNaN(price) ? 0 : price;
+    }
+    return 0;
+  },
+
+  // Вычисляет платежи
+  calculatePayments() {
+    const total = this.totalAmount;
+    const baseAmount = Math.floor(total / 4);
+    const remainder = total % 4;
+
+    // Первый платеж может быть больше на остаток
+    const payments = [
+      { amount: baseAmount + remainder, days: 0 }
+    ];
+
+    // Остальные 3 платежа через 2 недели
+    for (let i = 1; i < 4; i++) {
+      payments.push({ amount: baseAmount, days: i * 14 });
+    }
+
+    // Конвертируем дни в даты
+    return payments.map(p => {
+      const date = new Date();
+      date.setDate(date.getDate() + p.days);
+      return {
+        date: this.formatDate(date),
+        amount: p.amount
+      };
+    });
+  },
+
+  init(selector, config = {}) {
+    // Получаем цену из DOM
+    this.totalAmount = this.getPriceFromDOM();
+
+    // Если передана сумма в config, используем её
+    if (config.amount && config.amount > 0) {
+      this.totalAmount = config.amount;
+    }
+
+    // Если цена не получилась - не инициализируем
+    if (this.totalAmount <= 0) {
+      return;
+    }
+
+    this.config = {
+      payments: this.calculatePayments(),
+      ...config
+    };
+
+    this.renderButton(selector);
+    this.setupModal();
+  },
+
+  renderButton(selector) {
+    const container = document.querySelector(selector);
+    if (!container) return;
+
+    const firstPayment = this.config.payments[0];
+    const button = document.createElement('button');
+    button.className = 'dolyame-button';
+    button.innerHTML = `
+      <svg width="64" height="20" viewBox="0 0 64 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block; flex-shrink: 0;">
+        <rect width="64" height="20" rx="2" fill="black"></rect>
+        <path d="M47.9412 9.81863L45.9579 7.57313H44.7984V12.7722H46.009V9.45511L47.8197 11.4204H48.0435L49.823 9.45511V12.7722H51.0336V7.57313H49.8741L47.9412 9.81863Z" fill="white" style="display: unset;"></path>
+        <path d="M56.8017 7.57313L53.8011 10.9524V7.57313H52.5905V12.7722H53.6996L56.7002 9.39301V12.7722H57.9108V7.57313H56.8017Z" fill="white" style="display: unset;"></path>
+        <path d="M38.2776 9.47556C38.2776 10.3033 38.7221 10.9554 39.4045 11.2288L38.125 12.7722H39.6067L40.7707 11.3681H42.0301V12.7722H43.2407V7.57313H40.1587C39.0096 7.57313 38.2776 8.37364 38.2776 9.47556ZM42.0309 8.71822V10.2556H40.3832C39.8335 10.2556 39.5386 9.94359 39.5386 9.48616C39.5386 9.02873 39.8438 8.71671 40.3832 8.71671L42.0309 8.71822Z" fill="white" style="display: unset;"></path>
+        <path d="M32.6519 8.61295C32.5778 10.401 32.2074 11.5552 31.4821 11.5552H31.3005V12.8033L31.4939 12.8139C32.9482 12.8964 33.7521 11.5969 33.884 8.75836H35.7969V12.7722H37.0053V7.57313H32.6926L32.6519 8.61295Z" fill="white" style="display: unset;"></path>
+        <path d="M28.0945 7.50049C26.4572 7.50049 25.2792 8.65467 25.2792 10.1724C25.2792 11.7423 26.5609 12.8556 28.0945 12.8556C29.6918 12.8556 30.9328 11.6802 30.9328 10.1724C30.9328 8.66451 29.6918 7.50049 28.0945 7.50049ZM28.0945 11.6075C27.1691 11.6075 26.5387 10.9941 26.5387 10.1724C26.5387 9.33021 27.1699 8.73343 28.0945 8.73343C29.0191 8.73343 29.6711 9.35748 29.6711 10.1724C29.6711 10.9873 29.0102 11.6075 28.0945 11.6075Z" fill="white" style="display: unset;"></path>
+        <path d="M23.9949 7.58306H19.7223L19.6815 8.62288C19.6208 10.1209 19.237 11.5454 18.5117 11.5659L18.1761 11.5765V14H19.397V12.7731H23.6385V14H24.8699V11.5659H23.9949V7.58306ZM22.7843 11.5659H20.2009C20.638 10.8904 20.8721 9.91263 20.9129 8.76905H22.7843V11.5659Z" fill="white" style="display: unset;"></path>
+        <path d="M15.3913 6.39997H14.2174V12.8H15.3913V6.39997Z" fill="white"></path>
+        <path d="M12.6522 6.80001H11.4783V13.2H12.6522V6.80001Z" fill="white"></path>
+        <path d="M9.91305 7.19999H8.73914V13.6H9.91305V7.19999Z" fill="white"></path>
+        <path d="M7.17391 7.60003H6V14H7.17391V7.60003Z" fill="white"></path>
+      </svg>
+      <div class="dolyame-button-text">
+        4 платежа по ${firstPayment.amount} ₽
+      </div>
+      <svg width="6" height="11" viewBox="0 0 6 11" fill="none" style="flex-shrink: 0;">
+        <path d="M4.18934 5.25L0.219669 9.21967C-0.0732238 9.51256 -0.0732238 9.98744 0.219669 10.2803C0.512563 10.5732 0.987437 10.5732 1.28033 10.2803L5.78033 5.78033C6.07322 5.48744 6.07322 5.01256 5.78033 4.71967L1.28033 0.219669C0.987438 -0.0732245 0.512564 -0.0732245 0.21967 0.219669C-0.073223 0.512562 -0.073223 0.987436 0.21967 1.28033L4.18934 5.25Z" fill="#9299A2"/>
+      </svg>
+    `;
+
+    button.addEventListener('click', () => this.openModal());
+    container.appendChild(button);
+  },
+
+  setupModal() {
+    const bg = document.createElement('div');
+    bg.className = 'dolyame-modal-bg';
+
+    const modal = document.createElement('div');
+    modal.className = 'dolyame-modal';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'dolyame-modal-close';
+    closeBtn.innerHTML = `
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M1.70711 0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417 -0.0976311 1.31658 0.292893 1.70711L3.58579 5L0.292893 8.29289C-0.0976311 8.68342 -0.0976311 9.31658 0.292893 9.70711C0.683417 10.0976 1.31658 10.0976 1.70711 9.70711L5 6.41421L8.29289 9.70711C8.68342 10.0976 9.31658 10.0976 9.70711 9.70711C10.0976 9.31658 10.0976 8.68342 9.70711 8.29289L6.41421 5L9.70711 1.70711C10.0976 1.31658 10.0976 0.683417 9.70711 0.292893C9.31658 -0.0976311 8.68342 -0.0976311 8.29289 0.292893L5 3.58579L1.70711 0.292893Z" fill="#999"/>
+      </svg>
+    `;
+    closeBtn.addEventListener('click', () => this.closeModal());
+
+    const header = document.createElement('div');
+    header.className = 'dolyame-modal-header';
+    header.innerHTML = `
+      <svg width="64" height="20" viewBox="0 0 64 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="64" height="20" rx="2" fill="black"></rect>
+        <path d="M47.9412 9.81863L45.9579 7.57313H44.7984V12.7722H46.009V9.45511L47.8197 11.4204H48.0435L49.823 9.45511V12.7722H51.0336V7.57313H49.8741L47.9412 9.81863Z" fill="white" style="display: unset;"></path>
+        <path d="M56.8017 7.57313L53.8011 10.9524V7.57313H52.5905V12.7722H53.6996L56.7002 9.39301V12.7722H57.9108V7.57313H56.8017Z" fill="white" style="display: unset;"></path>
+        <path d="M38.2776 9.47556C38.2776 10.3033 38.7221 10.9554 39.4045 11.2288L38.125 12.7722H39.6067L40.7707 11.3681H42.0301V12.7722H43.2407V7.57313H40.1587C39.0096 7.57313 38.2776 8.37364 38.2776 9.47556ZM42.0309 8.71822V10.2556H40.3832C39.8335 10.2556 39.5386 9.94359 39.5386 9.48616C39.5386 9.02873 39.8438 8.71671 40.3832 8.71671L42.0309 8.71822Z" fill="white" style="display: unset;"></path>
+        <path d="M32.6519 8.61295C32.5778 10.401 32.2074 11.5552 31.4821 11.5552H31.3005V12.8033L31.4939 12.8139C32.9482 12.8964 33.7521 11.5969 33.884 8.75836H35.7969V12.7722H37.0053V7.57313H32.6926L32.6519 8.61295Z" fill="white" style="display: unset;"></path>
+        <path d="M28.0945 7.50049C26.4572 7.50049 25.2792 8.65467 25.2792 10.1724C25.2792 11.7423 26.5609 12.8556 28.0945 12.8556C29.6918 12.8556 30.9328 11.6802 30.9328 10.1724C30.9328 8.66451 29.6918 7.50049 28.0945 7.50049ZM28.0945 11.6075C27.1691 11.6075 26.5387 10.9941 26.5387 10.1724C26.5387 9.33021 27.1699 8.73343 28.0945 8.73343C29.0191 8.73343 29.6711 9.35748 29.6711 10.1724C29.6711 10.9873 29.0102 11.6075 28.0945 11.6075Z" fill="white" style="display: unset;"></path>
+        <path d="M23.9949 7.58306H19.7223L19.6815 8.62288C19.6208 10.1209 19.237 11.5454 18.5117 11.5659L18.1761 11.5765V14H19.397V12.7731H23.6385V14H24.8699V11.5659H23.9949V7.58306ZM22.7843 11.5659H20.2009C20.638 10.8904 20.8721 9.91263 20.9129 8.76905H22.7843V11.5659Z" fill="white" style="display: unset;"></path>
+        <path d="M15.3913 6.39997H14.2174V12.8H15.3913V6.39997Z" fill="white"></path>
+        <path d="M12.6522 6.80001H11.4783V13.2H12.6522V6.80001Z" fill="white"></path>
+        <path d="M9.91305 7.19999H8.73914V13.6H9.91305V7.19999Z" fill="white"></path>
+        <path d="M7.17391 7.60003H6V14H7.17391V7.60003Z" fill="white"></path>
+      </svg>
+      <div class="dolyame-modal-header-text">Оплатите 25% от стоимости покупки</div>
+    `;
+
+    const description = document.createElement('p');
+    description.className = 'dolyame-modal-description';
+    description.textContent = 'Оставшиеся 3 части спишутся автоматически с шагом в две недели';
+
+    const features = document.createElement('div');
+    features.className = 'dolyame-features';
+    features.innerHTML = `
+      <div class="dolyame-feature">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect opacity="0.08" width="32" height="32" rx="4" fill="#B182BC"></rect>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M13.8666 11.4666C14.1853 11.4666 14.4736 11.6557 14.6005 11.9481L16.2503 15.7496L20.0518 17.3993C20.3441 17.5262 20.5333 17.8145 20.5333 18.1332C20.5333 18.4519 20.3441 18.7402 20.0518 18.8671L16.2503 20.5169L14.6005 24.3184C14.4736 24.6107 14.1853 24.7999 13.8666 24.7999C13.5479 24.7999 13.2596 24.6107 13.1327 24.3184L11.483 20.5169L7.68146 18.8671C7.38911 18.7402 7.19995 18.4519 7.19995 18.1332C7.19995 17.8145 7.38911 17.5262 7.68146 17.3993L11.483 15.7496L13.1327 11.9481C13.2596 11.6557 13.5479 11.4666 13.8666 11.4666ZM13.8666 14.2761L12.825 16.6762C12.7442 16.8623 12.5957 17.0108 12.4096 17.0916L10.0095 18.1332L12.4096 19.1748C12.5957 19.2556 12.7442 19.4041 12.825 19.5902L13.8666 21.9904L14.9082 19.5902C14.989 19.4041 15.1375 19.2556 15.3236 19.1748L17.7238 18.1332L15.3236 17.0916C15.1375 17.0108 14.989 16.8623 14.9082 16.6762L13.8666 14.2761Z" fill="black"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M20.5333 6.66675C20.852 6.66675 21.1403 6.85591 21.2672 7.14826L22.1906 9.2761L24.3185 10.1995C24.6108 10.3264 24.8 10.6147 24.8 10.9334C24.8 11.2521 24.6108 11.5404 24.3185 11.6673L22.1906 12.5907L21.2672 14.7186C21.1403 15.0109 20.852 15.2001 20.5333 15.2001C20.2146 15.2001 19.9263 15.0109 19.7995 14.7186L18.876 12.5907L16.7482 11.6673C16.4558 11.5404 16.2667 11.2521 16.2667 10.9334C16.2667 10.6147 16.4558 10.3264 16.7482 10.1995L18.876 9.2761L19.7995 7.14826C19.9263 6.85591 20.2146 6.66675 20.5333 6.66675ZM20.5333 9.47625L20.218 10.2027C20.1373 10.3889 19.9888 10.5374 19.8027 10.6181L19.0762 10.9334L19.8027 11.2487C19.9888 11.3295 20.1373 11.478 20.218 11.6641L20.5333 12.3906L20.8486 11.6641C20.9294 11.478 21.0779 11.3295 21.264 11.2487L21.9905 10.9334L21.264 10.6181C21.0779 10.5374 20.9294 10.3889 20.8486 10.2027L20.5333 9.47625Z" fill="#B182BC"></path>
+        </svg>
+        <span>Без процентов и комиссий</span>
+      </div>
+      <div class="dolyame-feature">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect opacity="0.08" width="32" height="32" rx="4" fill="#6F99C6"></rect>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M18.4 16C18.4 15.5581 18.7581 15.2 19.2 15.2C20.5218 15.2 21.6 16.2781 21.6 17.6C21.6 18.9218 20.5218 20 19.2 20C18.7581 20 18.4 19.6418 18.4 19.2C18.4 18.7581 18.7581 18.4 19.2 18.4C19.6381 18.4 20 18.0381 20 17.6C20 17.1618 19.6381 16.8 19.2 16.8C18.7581 16.8 18.4 16.4418 18.4 16Z" fill="#6F99C6"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M23.4666 20.8001V11.2001C23.4666 10.611 22.9891 10.1334 22.4 10.1334H9.59996C9.01085 10.1334 8.53329 10.611 8.53329 11.2001V20.8001C8.53329 21.3892 9.01085 21.8668 9.59996 21.8668H22.4C22.9891 21.8668 23.4666 21.3892 23.4666 20.8001ZM9.59996 8.53345C8.1272 8.53345 6.93329 9.72735 6.93329 11.2001V20.8001C6.93329 22.2729 8.1272 23.4668 9.59996 23.4668H22.4C23.8727 23.4668 25.0666 22.2729 25.0666 20.8001V11.2001C25.0666 9.72735 23.8727 8.53345 22.4 8.53345H9.59996Z" fill="black"></path>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M7.46662 12.5334C7.46662 12.0916 7.82479 11.7334 8.26662 11.7334L21.0666 11.7334C21.5085 11.7334 21.8666 12.0916 21.8666 12.5334C21.8666 12.9753 21.5085 13.3334 21.0666 13.3334L8.26662 13.3334C7.82479 13.3334 7.46662 12.9753 7.46662 12.5334Z" fill="black"></path>
+        </svg>
+        <span>Как обычная оплата картой</span>
+      </div>
+    `;
+
+    const payments = document.createElement('div');
+    payments.className = 'dolyame-payments';
+    payments.innerHTML = this.config.payments.map((p, i) => `
+      <div class="dolyame-payment-item">
+        <div class="dolyame-payment-date">${i === 0 ? 'Сегодня' : p.date}</div>
+        <div class="dolyame-payment-amount">${p.amount} <span>₽</span></div>
+        <div class="dolyame-payment-line"></div>
+      </div>
+    `).join('');
+
+    const footer = document.createElement('div');
+    footer.className = 'dolyame-modal-footer';
+    footer.innerHTML = 'Подробнее о сервисе можно узнать на <a href="https://dolyame.ru" target="_blank">dolyame.ru</a>';
+
+    modal.appendChild(closeBtn);
+    modal.appendChild(header);
+    modal.appendChild(description);
+    modal.appendChild(features);
+    modal.appendChild(payments);
+    modal.appendChild(footer);
+
+    document.body.appendChild(bg);
+    document.body.appendChild(modal);
+
+    this.modal = modal;
+    this.bg = bg;
+
+    bg.addEventListener('click', () => this.closeModal());
+  },
+
+  openModal() {
+    this.modal.classList.add('active');
+    this.bg.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  },
+
+  closeModal() {
+    this.modal.classList.remove('active');
+    this.bg.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  DolyameWidget.init('#dolyame-container');
+});
+</script>
