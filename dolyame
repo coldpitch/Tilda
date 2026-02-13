@@ -82,6 +82,7 @@ DolyameInjector.init();
 
 .dolyame-button-text {
   flex-grow: 1 !important;
+  color: #252525;
 }
 
 .dolyame-modal-bg {
@@ -365,8 +366,60 @@ const DolyameWidget = {
       ...config
     };
 
+    this.selector = selector;
     this.renderButton(selector);
     this.setupModal();
+    this.observePriceChanges();
+  },
+
+  // Обновляет цену в кнопке и модалке
+  updatePrice() {
+    const newPrice = this.getPriceFromDOM();
+    if (newPrice <= 0 || newPrice === this.totalAmount) return;
+
+    this.totalAmount = newPrice;
+    this.config.payments = this.calculatePayments();
+
+    // Обновляем текст кнопки
+    const buttonText = document.querySelector('.dolyame-button-text');
+    if (buttonText) {
+      buttonText.textContent = `4 платежа по ${this.config.payments[0].amount} ₽`;
+    }
+
+    // Обновляем платежи в модалке
+    const paymentsContainer = this.modal.querySelector('.dolyame-payments');
+    if (paymentsContainer) {
+      paymentsContainer.innerHTML = this.config.payments.map((p, i) => `
+        <div class="dolyame-payment-item">
+          <div class="dolyame-payment-date">${i === 0 ? 'Сегодня' : p.date}</div>
+          <div class="dolyame-payment-amount">${p.amount} <span>₽</span></div>
+          <div class="dolyame-payment-line"></div>
+        </div>
+      `).join('');
+    }
+  },
+
+  // Наблюдает за изменением цены при смене размера/цвета
+  observePriceChanges() {
+    // 1. MutationObserver на атрибут data-product-price-def
+    const priceElement = document.querySelector('[data-product-price-def]');
+    if (priceElement) {
+      const priceObserver = new MutationObserver(() => {
+        this.updatePrice();
+      });
+      priceObserver.observe(priceElement, {
+        attributes: true,
+        attributeFilter: ['data-product-price-def']
+      });
+    }
+
+    // 2. Слушаем change на селектах и радио-кнопках опций товара
+    const controls = document.querySelector('.js-product-controls-wrapper');
+    if (controls) {
+      controls.addEventListener('change', () => {
+        setTimeout(() => this.updatePrice(), 300);
+      });
+    }
   },
 
   renderButton(selector) {
